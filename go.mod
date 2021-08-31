@@ -1,4 +1,4 @@
-module excelize/v2
+module github.com/luoyuahui/excelize/v2
 
 go 1.15
 
