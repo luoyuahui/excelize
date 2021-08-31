@@ -12,7 +12,7 @@ type StreamFile struct {
 }
 
 type SheetStreamWriter struct {
-	sw      *StreamWriter
+	*StreamWriter
 	File    *StreamFile
 	zipfile io.Writer
 }
@@ -73,15 +73,15 @@ func (s *StreamFile) NewStreamWriter(sheet string) (*SheetStreamWriter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &SheetStreamWriter{sw: sw, File: s, zipfile: fi}, nil
+	return &SheetStreamWriter{StreamWriter: sw, File: s, zipfile: fi}, nil
 }
 
 func (s *SheetStreamWriter) Flush() error {
-	err := s.sw.Flush()
+	err := s.StreamWriter.Flush()
 	if err != nil {
 		return err
 	}
-	_, err = s.sw.rawData.buf.WriteTo(s.zipfile)
+	_, err = s.StreamWriter.rawData.buf.WriteTo(s.zipfile)
 	if err != nil {
 		return err
 	}
@@ -91,12 +91,12 @@ func (s *SheetStreamWriter) Flush() error {
 }
 
 func (s *SheetStreamWriter) SetRow(axis string, values []interface{}, needflush bool, opts ...RowOpts) (err error) {
-	err = s.sw.SetRow(axis, values, opts...)
+	err = s.StreamWriter.SetRow(axis, values, opts...)
 	if err != nil {
 		return
 	}
 	if needflush {
-		_, err = s.sw.rawData.buf.WriteTo(s.zipfile)
+		_, err = s.StreamWriter.rawData.buf.WriteTo(s.zipfile)
 		if err != nil {
 			return
 		}
